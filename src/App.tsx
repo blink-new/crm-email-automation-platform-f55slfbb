@@ -6,6 +6,10 @@ import { RecentActivity } from '@/components/dashboard/RecentActivity'
 import { LeadsPipeline } from '@/components/dashboard/LeadsPipeline'
 import { ContactsTable } from '@/components/contacts/ContactsTable'
 import { NewContactModal } from '@/components/contacts/NewContactModal'
+import { EmailCampaigns } from '@/components/campaigns/EmailCampaigns'
+import { NewCampaignModal } from '@/components/campaigns/NewCampaignModal'
+import { WorkflowBuilder } from '@/components/workflows/WorkflowBuilder'
+import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
 import { blink } from '@/blink/client'
 
 function App() {
@@ -13,6 +17,8 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showNewContactModal, setShowNewContactModal] = useState(false)
+  const [showNewCampaignModal, setShowNewCampaignModal] = useState(false)
+  const [showNewWorkflowModal, setShowNewWorkflowModal] = useState(false)
 
   useEffect(() => {
     const unsubscribe = blink.auth.onAuthStateChanged((state) => {
@@ -28,7 +34,13 @@ function App() {
   }
 
   const handleNewCampaign = () => {
+    setShowNewCampaignModal(true)
     setActiveTab('campaigns')
+  }
+
+  const handleNewWorkflow = () => {
+    setShowNewWorkflowModal(true)
+    setActiveTab('workflows')
   }
 
   const handleContactCreated = () => {
@@ -116,9 +128,7 @@ function App() {
               <h1 className="text-2xl font-bold text-gray-900">Email Campaigns</h1>
               <p className="text-gray-600">Create and manage your email marketing campaigns.</p>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-              <p className="text-gray-500">Email campaigns coming soon...</p>
-            </div>
+            <EmailCampaigns onNewCampaign={() => setShowNewCampaignModal(true)} />
           </div>
         )
       case 'workflows':
@@ -128,9 +138,7 @@ function App() {
               <h1 className="text-2xl font-bold text-gray-900">Workflows</h1>
               <p className="text-gray-600">Automate your marketing and sales processes.</p>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-              <p className="text-gray-500">Workflow automation coming soon...</p>
-            </div>
+            <WorkflowBuilder onNewWorkflow={() => setShowNewWorkflowModal(true)} />
           </div>
         )
       case 'analytics':
@@ -140,9 +148,7 @@ function App() {
               <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
               <p className="text-gray-600">Track your performance and gain insights.</p>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-              <p className="text-gray-500">Analytics dashboard coming soon...</p>
-            </div>
+            <AnalyticsDashboard />
           </div>
         )
       case 'settings':
@@ -175,6 +181,16 @@ function App() {
         open={showNewContactModal}
         onOpenChange={setShowNewContactModal}
         onContactCreated={handleContactCreated}
+      />
+      <NewCampaignModal
+        open={showNewCampaignModal}
+        onOpenChange={setShowNewCampaignModal}
+        onCampaignCreated={() => {
+          // Refresh campaigns if we're on the campaigns tab
+          if (activeTab === 'campaigns') {
+            window.location.reload()
+          }
+        }}
       />
     </div>
   )
